@@ -1,1 +1,1 @@
-# Deep Reservoir Computing - Tensorflow Library
+# Deep Reservoir Computing - TensorFlow Library
