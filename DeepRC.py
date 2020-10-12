@@ -168,10 +168,10 @@ class SimpleDeepReservoirLayer(keras.layers.Layer):
     # connectivity_recurrent - recurrent connectivity coefficient of all the recurrent weight matrices
     # return_sequences - if True, the state is returned for each time step, otherwise only for the last time step
     
-    def __init__(self, units = 100, layers = 1, concat = True,
+    def __init__(self, units = 100, layers = 1, concat = False,
                  input_scaling = 1, inter_scaling = 1,
                  spectral_radius = 0.99, leaky = 1,
-                 connectivity_recurrent = 1, 
+                 connectivity_recurrent = 10, 
                  connectivity_input = 10, 
                  connectivity_inter = 10,
                  return_sequences = False,
@@ -180,6 +180,7 @@ class SimpleDeepReservoirLayer(keras.layers.Layer):
         super().__init__(**kwargs)
         self.layers = layers
         self.units = units
+        
 
         #in case in which all the reservoir layers are concatenated
         #each level contains units/layers neurons
@@ -196,8 +197,9 @@ class SimpleDeepReservoirLayer(keras.layers.Layer):
         
         #creates a list of reservoirs
         #the first: 
+        
         self.reservoir = [
-            keras.layers.RNN(ReservoirCell(units = units,
+        keras.layers.RNN(ReservoirCell(units = units,
                              input_scaling = input_scaling,
                              spectral_radius = spectral_radius,
                              leaky = leaky,
@@ -214,17 +216,7 @@ class SimpleDeepReservoirLayer(keras.layers.Layer):
                                                              connectivity_input = connectivity_input_others,
                                                              connectivity_recurrent = connectivity_recurrent),
                                                    return_sequences = True,return_state = True))
-        """
-        if (self.layers>1):
-            self.reservoir.append(
-                keras.layers.RNN(ReservoirCell(units = units,
-                                               input_scaling= input_scaling_others,
-                                               spectral_radius = spectral_radius,
-                                               leaky = leaky,
-                                               connectivity_input = connectivity_input_others,
-                                               connectivity_recurrent = connectivity_recurrent),
-                                               return_sequences = True, return_state = True))
-        """
+
         
         self.concat = concat
         
@@ -234,7 +226,9 @@ class SimpleDeepReservoirLayer(keras.layers.Layer):
     def call(self,inputs):
         #compute the output of the deep reservoir
         
-        X = inputs #external input
+        #I = keras.layers.InputLayer(input_shape = self.batch_input_shape)
+        
+        X = inputs #I(inputs) #external input
         states = [] #list of all the states in all the layers 
         states_last = [] #list of the states in all the layers for the last time step
         layer_states = None
@@ -313,3 +307,5 @@ class SimpleDeepESNClassifier(keras.Model):
         h = self.hidden(m)
         y = self.output_(h)
         return y
+    
+    
