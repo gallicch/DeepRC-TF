@@ -25,8 +25,6 @@ import numpy as np
 def sparse_eye(M):
   #Generates an M x M matrix to be used as sparse identity matrix for the 
   #re-scaling of the sparse recurrent kernel in presence of non-zero leakage.
-  #The neurons are connected according to a ring topology, where each neuron
-  #receives input only from one neuron and propagates its activation only to one other neuron.
   #All the non-zero elements are set to 1
   dense_shape = (M,M)
   
